@@ -57,6 +57,10 @@ public class CropImageActivity extends MonitoredActivity {
     private int maxY;
     private int exifRotation;
 
+    private int fixedX;
+    private int fixedY;
+    private boolean isFixed;
+
     private Uri sourceUri;
     private Uri saveUri;
 
@@ -126,6 +130,10 @@ public class CropImageActivity extends MonitoredActivity {
             maxX = extras.getInt(Crop.Extra.MAX_X);
             maxY = extras.getInt(Crop.Extra.MAX_Y);
             saveUri = extras.getParcelable(MediaStore.EXTRA_OUTPUT);
+            isFixed = extras.getBoolean(Crop.Extra.FIXED);
+            fixedX = extras.getInt(Crop.Extra.FIXED_X);
+            fixedY = extras.getInt(Crop.Extra.FIXED_Y);
+            fixedY = extras.getInt(Crop.Extra.FIXED_Y);
         }
 
         sourceUri = intent.getData();
@@ -228,9 +236,9 @@ public class CropImageActivity extends MonitoredActivity {
             Rect imageRect = new Rect(0, 0, width, height);
 
             // Make the default size about 4/5 of the width or height
-            int cropWidth = Math.min(width, height) * 4 / 5;
+            int cropWidth = !isFixed ? Math.min(width, height) * 4 / 5 : fixedX;
             @SuppressWarnings("SuspiciousNameCombination")
-            int cropHeight = cropWidth;
+            int cropHeight = !isFixed ? cropWidth : fixedY;
 
             if (aspectX != 0 && aspectY != 0) {
                 if (aspectX > aspectY) {
@@ -244,7 +252,7 @@ public class CropImageActivity extends MonitoredActivity {
             int y = (height - cropHeight) / 2;
 
             RectF cropRect = new RectF(x, y, x + cropWidth, y + cropHeight);
-            hv.setup(imageView.getUnrotatedMatrix(), imageRect, cropRect, aspectX != 0 && aspectY != 0);
+            hv.setup(imageView.getUnrotatedMatrix(), imageRect, cropRect, aspectX != 0 && aspectY != 0, isFixed);
             imageView.add(hv);
         }
 

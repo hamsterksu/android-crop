@@ -76,6 +76,7 @@ class HighlightView {
     private float handleRadius;
     private float outlineWidth;
     private boolean isFocused;
+    private boolean isFixed;
 
     public HighlightView(View context) {
         viewContext = context;
@@ -97,8 +98,9 @@ class HighlightView {
         }
     }
 
-    public void setup(Matrix m, Rect imageRect, RectF cropRect, boolean maintainAspectRatio) {
-        matrix = new Matrix(m);
+    public void setup(Matrix m, Rect imageRect, RectF cropRect, boolean maintainAspectRatio, boolean isFixed) {
+        this.isFixed = isFixed;
+        this.matrix = new Matrix(m);
 
         this.cropRect = cropRect;
         this.imageRect = new RectF(imageRect);
@@ -269,7 +271,7 @@ class HighlightView {
             // Convert to image space before sending to moveBy()
             moveBy(dx * (cropRect.width() / r.width()),
                    dy * (cropRect.height() / r.height()));
-        } else {
+        } else if(!isFixed) {
             if (((GROW_LEFT_EDGE | GROW_RIGHT_EDGE) & edge) == 0) {
                 dx = 0;
             }
